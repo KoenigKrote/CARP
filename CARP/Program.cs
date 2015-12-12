@@ -50,7 +50,7 @@ namespace CARP
         {
             int newX = playerCoord.X + x;
             int newY = playerCoord.Y + y;
-            if (newX < wWidth && newY <= wHeight && newX >= 0 && newY >= 0) 
+            if (newX < wWidth && newY < wHeight && newX >= 0 && newY >= 0) 
             {
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.SetCursorPosition(playerCoord.X, playerCoord.Y);
