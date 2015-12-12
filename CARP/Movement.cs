@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace CARP
 {
-    class Coordinates
+    public class Movement
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public Coordinate coord { get; set; }
+
+        
     }
 }
