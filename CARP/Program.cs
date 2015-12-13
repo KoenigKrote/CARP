@@ -13,11 +13,11 @@ namespace CARP
         //Coordinates in console are ridiculous.  X is distance from left, Y is distance from top.
         //To go down one, add 1 to Y.  To go left one, subtract 1 from X.  Disregard planar geometry, acquire insanity.
         IActor _actor;
-        
+
 
         static void Main(string[] args)
         {
-            
+
             Program p = new Program();
             p.Initialize();
             while (true)
@@ -34,17 +34,12 @@ namespace CARP
             Console.CursorVisible = false;
             Console.BackgroundColor = ConsoleColor.DarkGray;
             Console.SetWindowSize(120, 40);
-            Console.SetBufferSize(120, 40);
+            Console.SetBufferSize(360, 120);
             wWidth = Console.WindowWidth;
             wHeight = Console.WindowHeight;
             Console.Clear();
-            Coordinate playerCoord = new Coordinate()
-            {
-                X = (wWidth / 2),
-                Y = (wHeight / 2)
-            };
             World.newWorld();
-            _actor = new Player(playerCoord);
+            _actor = new Player();
         }
 
         private void inputSwitch(ConsoleKeyInfo input)
@@ -77,6 +72,9 @@ namespace CARP
                     break;
                 case ConsoleKey.NumPad9:
                     _actor.Move(1, -1);
+                    break;
+                case ConsoleKey.NumPad0:
+                    World.redrawWorld(1, 0);
                     break;
             }
         }
