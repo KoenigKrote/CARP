@@ -8,12 +8,8 @@ namespace CARP
 {
     public class Program
     {
-        private static int wWidth;
-        private static int wHeight;
-        //Coordinates in console are ridiculous.  X is distance from left, Y is distance from top.
-        //To go down one, add 1 to Y.  To go left one, subtract 1 from X.  Disregard planar geometry, acquire insanity.
         IActor _actor;
-
+        World currentWorld;
 
         static void Main(string[] args)
         {
@@ -35,11 +31,13 @@ namespace CARP
             Console.BackgroundColor = ConsoleColor.DarkGray;
             Console.SetWindowSize(120, 40);
             Console.SetBufferSize(120, 40);
-            wWidth = Console.WindowWidth;
-            wHeight = Console.WindowHeight;
             Console.Clear();
-            World.newWorld();
-            _actor = new Player();
+
+            currentWorld = new World();
+            currentWorld.newWorld(Console.BufferHeight*2, Console.BufferWidth*2,
+                Console.WindowHeight, Console.WindowWidth);
+
+            _actor = new Player(currentWorld, Console.WindowHeight, Console.WindowWidth, "white", '@');
         }
 
         private void inputSwitch(ConsoleKeyInfo input)
@@ -74,7 +72,7 @@ namespace CARP
                     _actor.Move(1, -1);
                     break;
                 case ConsoleKey.NumPad0:
-                    World.redrawWorld(1, 0);
+                    Draw.redrawWorld(1, 0, currentWorld);
                     break;
             }
         }

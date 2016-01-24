@@ -8,7 +8,7 @@ namespace CARP
 {
     public interface IActor
     {
-        Coordinate coord { get; set; }
+        Coordinate currentCoord { get; set; }
         void Move(int x, int y);
         bool canMoveOnTerrain(Coordinate coord);
     }

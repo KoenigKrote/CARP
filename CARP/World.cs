@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace CARP
 {
-    public static class World
+    public class World
     {
-        private static int windowWidth;
-        private static int windowHeight;
-        private static int worldHeight;
-        private static int worldWidth;
-        private static char[,] worldArray;
-        public static MapInfo mapInfo = new MapInfo();
+        public int windowWidth;
+        public int windowHeight;
+        public int worldHeight;
+        public int worldWidth;
+        public TileInfo[,] worldArray;
+        public MapInfo mapInfo;
 
         public struct MapInfo
         {
@@ -23,93 +23,57 @@ namespace CARP
             public int yWorld { get; set; }
         }
 
-        static World()
+        public struct TileInfo
         {
-            windowHeight = Console.WindowHeight - 1;
-            windowWidth = Console.WindowWidth - 1;
-            worldHeight = Console.BufferHeight * 2;
-            worldWidth = Console.BufferWidth * 2;
-            worldArray = new char[worldWidth+1, worldHeight+1];
+            public char c { get; set; }
+            public string color { get; set; }
+        }
+
+        public void newWorld(int worldHeight, int worldWidth, int windowHeight, int windowWidth)
+        {
+            this.windowHeight = windowHeight - 1;
+            this.windowWidth = windowWidth - 1;
+            this.worldHeight = worldHeight;
+            this.worldWidth = worldWidth;
+            worldArray = new TileInfo[worldWidth, worldHeight];
+            mapInfo = new MapInfo();
             getMapPosition(0, 0);
+            addToWorld();
+            Draw.redrawWorld(0, 0, this);
         }
 
-        public static void newWorld()
+        private void addToWorld()
         {
-            for (int x = 0; x <= worldWidth; x++)
-                for (int y = 0; y <= worldHeight; y++)
+            for (int x = 0; x <= worldWidth - 1; x++)
+                for (int y = 0; y <= worldHeight - 1; y++)
                 {
-                    if ((x == 0 && y > 0 && y < worldHeight) 
-                        || (x == worldWidth && y > 0 && y < worldHeight))
-                        addToWorld('║', x, y);
-                    if ((x > 0 && y == 0) || (x > 0 && y == worldHeight))
-                        addToWorld('═', x, y);
+                    if ((x == 0 && y > 0 && y < worldHeight - 1)
+                        || (x == worldWidth - 1 && y > 0 && y < worldHeight - 1))
+                        worldArray[x, y] = new TileInfo() { c = '║', color = "grey" };
+                    if ((x > 0 && y == 0) || (x > 0 && y == worldHeight - 1))
+                        worldArray[x, y] = new TileInfo() { c = '═', color = "grey" };
                     if (x == 0 && y == 0)
-                        addToWorld('╔', x, y);
-                    if (x == 0 && y == worldHeight)
-                        addToWorld('╚', x, y);
-                    if (x == worldWidth && y == 0)
-                        addToWorld('╗', x, y);
-                    if (x == worldWidth && y == worldHeight)
-                        addToWorld('╝', x, y);
+                        worldArray[x, y] = new TileInfo() { c = '╔', color = "grey" }; 
+                    if (x == 0 && y == worldHeight - 1)
+                        worldArray[x, y] = new TileInfo() { c = '╚', color = "grey" };
+                    if (x == worldWidth - 1 && y == 0)
+                        worldArray[x, y] = new TileInfo() { c = '╗', color = "grey" };
+                    if (x == worldWidth - 1 && y == worldHeight - 1)
+                        worldArray[x, y] = new TileInfo() { c = '╝', color = "grey" };
                 }
-            //Reset cursor position to top
-            Console.SetCursorPosition(0, 0);
         }
 
-        private static void addToWorld(char c, int x, int y)
+        public void getMapPosition(int x, int y)
         {
-            if (x <= windowWidth && y <= windowHeight)
-            {
-                Console.SetCursorPosition(x, y);
-                Console.Write(c);
-            }
-            
-            worldArray[x, y] = c;
+            mapInfo.xQuad = (int)Math.Floor((decimal)(x / windowWidth));
+            mapInfo.yQuad = (int)Math.Floor((decimal)(y / windowHeight));
+            mapInfo.xWorld = windowWidth * mapInfo.xQuad;
+            mapInfo.yWorld = windowHeight * mapInfo.yQuad;
         }
 
-        public static void redrawWorld(int newX, int newY)
+        public char checkTerrain(int x, int y)
         {
-            getMapPosition(newX, newY);
-            char c;
-            Console.Clear();
-            Console.SetCursorPosition(0, 0);
-            for (int x = 0; x <= windowWidth; x++)
-                for (int y = 0; y <= windowHeight; y++)
-                    if (x <= windowWidth && y <= windowHeight)
-                    {
-                        c = worldArray[mapInfo.xWorld + x, mapInfo.yWorld + y];
-                        if (c != char.MinValue)
-                        {
-                            Console.SetCursorPosition(x, y);
-                            Console.Write(c);
-                        }
-                    }
-        }
-
-        //private static Tuple<int,int> moveWorldWindow(int newY, int newX)
-        //{
-        //    int xQuad = (int)Math.Floor((decimal)(newX / windowWidth));
-        //    int yQuad = (int)Math.Floor((decimal)(newY / windowHeight));
-        //    int worldX = windowWidth * xQuad;
-        //    int worldY = windowHeight * yQuad;
-        //    //TODO: Clean this
-        //    Console.SetWindowPosition(
-        //        windowWidth * xQuad,
-        //        windowHeight * yQuad);
-        //    return Tuple.Create(worldX, worldY);
-        //}
-
-        public static void getMapPosition(int x, int y)
-        {
-            mapInfo.xQuad = (int)Math.Floor((decimal)(x / Console.WindowWidth));
-            mapInfo.yQuad = (int)Math.Floor((decimal)(y / Console.WindowHeight));
-            mapInfo.xWorld = Console.WindowWidth * mapInfo.xQuad;
-            mapInfo.yWorld = Console.WindowHeight * mapInfo.yQuad;
-        }
-
-        public static char checkTerrain(int x, int y)
-        {
-            return worldArray[x, y];
+            return worldArray[x, y].c;
         }
     }
 }
