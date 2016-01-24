@@ -8,7 +8,25 @@ namespace CARP
 {
     public class Coordinate
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public int xWorld { get; set; }
+        public int yWorld { get; set; }
+        public int xWindow { get; set; }
+        public int yWindow { get; set; }
+
+        public int xQuadrant
+        {
+            get
+            {
+                return (int)Math.Floor((decimal)(xWorld / Console.WindowWidth));
+            }
+        }
+
+        public int yQuadrant
+        {
+            get
+            {
+                return (int)Math.Floor((decimal)(yWorld / Console.WindowHeight));
+            }
+        }
     }
 }

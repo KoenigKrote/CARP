@@ -9,25 +9,28 @@ namespace CARP
     public class Player : IActor
     {
         Random rnd = new Random();
+        public Coordinate coord { get; set; }
+        private char[] invalidTerrain = { '╔', '║', '╚', '═', '╗', '╝' };
+
+
         public Player()
         {
             coord = rndCoord(Console.WindowWidth, Console.WindowHeight);
             Move(0, 0);
         }
 
-        public Coordinate coord { get; set; }
-        private char[] invalidTerrain = { '╔', '║', '╚', '═', '╗', '╝' };
-
         private Coordinate rndCoord(int xMax, int yMax)
         {
             Coordinate tempCoord = new Coordinate();
             do
             {
-                tempCoord.X = rnd.Next(xMax);
-                tempCoord.Y = rnd.Next(yMax);
-            } while (invalidTerrain.Contains(World.checkTerrain(tempCoord.X, tempCoord.Y)) ? true : false);
+                tempCoord.xWorld = rnd.Next(xMax);
+                tempCoord.yWorld = rnd.Next(yMax);
+                tempCoord.xWindow = tempCoord.xWorld;
+                tempCoord.yWindow = tempCoord.yWorld;
+            } while (invalidTerrain.Contains(World.checkTerrain(tempCoord.xWorld, tempCoord.yWorld)) ? true : false);
             //This loop uses the same terrain check as movement, but since its a loop we want to rerun the loop
-            //In the even that our terrain is invalid.
+            //In the event that our terrain is invalid.
 
             return tempCoord;
         }
@@ -36,53 +39,72 @@ namespace CARP
         //TODO: Simplify this
         public void Move(int x, int y)
         {
-            Coordinate newCoord = new Coordinate()
-            { X = coord.X + x, Y = coord.Y + y };
-
-            if (newCoord.X+1 > Console.WindowWidth || newCoord.Y+1 > Console.WindowHeight)
+            if (x == 0 && y == 0)
             {
-                World.redrawWorld(newCoord.X, newCoord.Y);
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.SetCursorPosition(coord.X, coord.Y);
+                Console.SetCursorPosition(coord.xWindow, coord.yWindow);
                 Console.Write("@");
                 return;
             }
-            //else if (newCoord.X + 1 > Console.WindowWidth)
-            //{
-            //    World.redrawWorldX();
-            //    Console.ForegroundColor = ConsoleColor.White;
-            //    Console.SetCursorPosition(coord.X, coord.Y);
-            //    Console.Write("@");
-            //    return;
-            //}
-            //else if (newCoord.Y + 1 > Console.WindowHeight)
-            //{
-            //    World.redrawWorldY();
-            //    Console.ForegroundColor = ConsoleColor.White;
-            //    Console.SetCursorPosition(coord.X, coord.Y);
-            //    Console.Write("@");
-            //    return;
-            //}
+
+            Coordinate newCoord = new Coordinate() {
+                xWorld = coord.xWorld + x,
+                yWorld = coord.yWorld + y,
+                xWindow = coord.xWindow + x,
+                yWindow = coord.yWindow + y
+            };
+
+
+            if (newCoord.xQuadrant != World.mapInfo.xQuad)
+            {
+                World.redrawWorld(newCoord.xWorld, newCoord.yWorld);
+                newCoord.xWindow = Console.WindowWidth - Math.Abs(newCoord.xWindow);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(newCoord.xWindow, newCoord.yWindow);
+                Console.Write("@");
+                coord.xWorld += x;
+                coord.yWorld += y;
+                coord.xWindow = newCoord.xWindow;
+                coord.yWindow = newCoord.yWindow;
+                return;
+            }
+            else if (newCoord.yQuadrant != World.mapInfo.yQuad)
+            {
+                World.redrawWorld(newCoord.xWorld, newCoord.yWorld);
+                newCoord.yWindow = Console.WindowHeight - Math.Abs(newCoord.yWindow);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(newCoord.xWindow, newCoord.yWindow);
+                Console.Write("@");
+                coord.xWorld += x;
+                coord.yWorld += y;
+                coord.xWindow = newCoord.xWindow;
+                coord.yWindow = newCoord.yWindow;
+                return;
+            }
 
 
             if (canMoveOnTerrain(newCoord))
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.SetCursorPosition(coord.X, coord.Y);
+                Console.SetCursorPosition(coord.xWindow, coord.yWindow);
                 Console.Write(" ");
-                coord.X += x;
-                coord.Y += y;
-                Console.SetCursorPosition(coord.X, coord.Y);
+                coord.xWorld += x;
+                coord.yWorld += y;
+                coord.xWindow += x;
+                coord.yWindow += y;
+                Console.SetCursorPosition(coord.xWindow, coord.yWindow);
                 Console.Write("@");
                 return;
             }
         }
 
+
         public bool canMoveOnTerrain(Coordinate coord)
         {
-            return invalidTerrain.Contains(World.checkTerrain(coord.X, coord.Y)) ? false : true;
+            return invalidTerrain.Contains(World.checkTerrain(coord.xWorld, coord.yWorld)) ? false : true;
             //Maybe backwards thinking, but since it's easier to blacklist terrain than whitelist:
             //false returns if true, true returns if false.
         }
+
+
     }
 }

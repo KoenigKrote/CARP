@@ -30,11 +30,11 @@ namespace CARP
 
         private void Initialize()
         {
-
+            
             Console.CursorVisible = false;
             Console.BackgroundColor = ConsoleColor.DarkGray;
             Console.SetWindowSize(120, 40);
-            Console.SetBufferSize(360, 120);
+            Console.SetBufferSize(120, 40);
             wWidth = Console.WindowWidth;
             wHeight = Console.WindowHeight;
             Console.Clear();

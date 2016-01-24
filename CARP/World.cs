@@ -13,14 +13,24 @@ namespace CARP
         private static int worldHeight;
         private static int worldWidth;
         private static char[,] worldArray;
+        public static MapInfo mapInfo = new MapInfo();
+
+        public struct MapInfo
+        {
+            public int xQuad { get; set; }
+            public int yQuad { get; set; }
+            public int xWorld { get; set; } 
+            public int yWorld { get; set; }
+        }
 
         static World()
         {
             windowHeight = Console.WindowHeight - 1;
             windowWidth = Console.WindowWidth - 1;
-            worldHeight = windowHeight * 2;
-            worldWidth = windowWidth * 2;
+            worldHeight = Console.BufferHeight * 2;
+            worldWidth = Console.BufferWidth * 2;
             worldArray = new char[worldWidth+1, worldHeight+1];
+            getMapPosition(0, 0);
         }
 
         public static void newWorld()
@@ -53,31 +63,50 @@ namespace CARP
                 Console.SetCursorPosition(x, y);
                 Console.Write(c);
             }
+            
             worldArray[x, y] = c;
         }
 
         public static void redrawWorld(int newX, int newY)
         {
-            Console.MoveBufferArea(0, 0, worldWidth, worldHeight, newX, newY);
-        }
-        public static void redrawWorldX()
-        {
+            getMapPosition(newX, newY);
             char c;
             Console.Clear();
             Console.SetCursorPosition(0, 0);
             for (int x = 0; x <= windowWidth; x++)
                 for (int y = 0; y <= windowHeight; y++)
-                    if (x < windowWidth && y < windowHeight)
+                    if (x <= windowWidth && y <= windowHeight)
                     {
-                        Console.SetCursorPosition(x, y);
-                        c = worldArray[x+1, y];
-                        Console.Write(c);
+                        c = worldArray[mapInfo.xWorld + x, mapInfo.yWorld + y];
+                        if (c != char.MinValue)
+                        {
+                            Console.SetCursorPosition(x, y);
+                            Console.Write(c);
+                        }
                     }
         }
-        public static void redrawWorldY()
+
+        //private static Tuple<int,int> moveWorldWindow(int newY, int newX)
+        //{
+        //    int xQuad = (int)Math.Floor((decimal)(newX / windowWidth));
+        //    int yQuad = (int)Math.Floor((decimal)(newY / windowHeight));
+        //    int worldX = windowWidth * xQuad;
+        //    int worldY = windowHeight * yQuad;
+        //    //TODO: Clean this
+        //    Console.SetWindowPosition(
+        //        windowWidth * xQuad,
+        //        windowHeight * yQuad);
+        //    return Tuple.Create(worldX, worldY);
+        //}
+
+        public static void getMapPosition(int x, int y)
         {
-            
+            mapInfo.xQuad = (int)Math.Floor((decimal)(x / Console.WindowWidth));
+            mapInfo.yQuad = (int)Math.Floor((decimal)(y / Console.WindowHeight));
+            mapInfo.xWorld = Console.WindowWidth * mapInfo.xQuad;
+            mapInfo.yWorld = Console.WindowHeight * mapInfo.yQuad;
         }
+
         public static char checkTerrain(int x, int y)
         {
             return worldArray[x, y];
