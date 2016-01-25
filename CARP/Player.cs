@@ -28,7 +28,7 @@ namespace CARP
 
         private Coordinate rndCoord(int xMax, int yMax)
         {
-            Coordinate tempCoord = new Coordinate();
+            Coordinate tempCoord = new Coordinate(yMax, xMax);
             //Repeat the loop until a coordinate with valid terrain is found
             do
             {
@@ -42,7 +42,7 @@ namespace CARP
 
         public void Move(int x, int y)
         {
-            Coordinate newCoord = new Coordinate()
+            Coordinate newCoord = new Coordinate(currentCoord.windowHeight, currentCoord.windowWidth)
             {
                 xWorld = currentCoord.xWorld + x,
                 yWorld = currentCoord.yWorld + y,

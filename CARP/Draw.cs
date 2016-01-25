@@ -16,7 +16,7 @@ namespace CARP
             clearWorld();
             World.TileInfo Tile;
             for (int x = 0; x <= currentWorld.windowWidth; x++)
-                for (int y = 0; y <= currentWorld.windowHeight; y++)
+                for (int y = 0; y < currentWorld.windowHeight; y++)
                     if (x <= currentWorld.windowWidth && y <= currentWorld.windowHeight)
                     {
                         Tile = currentWorld.worldArray[currentWorld.mapInfo.xWorld + x,

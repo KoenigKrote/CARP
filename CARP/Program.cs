@@ -32,12 +32,13 @@ namespace CARP
             Console.SetWindowSize(120, 40);
             Console.SetBufferSize(120, 40);
             Console.Clear();
-
+            var windowHeight = 20;
+            var windowWidth = 60;
             currentWorld = new World();
-            currentWorld.newWorld(Console.BufferHeight*2, Console.BufferWidth*2,
-                Console.WindowHeight, Console.WindowWidth);
+            currentWorld.newWorld(windowHeight*2, windowWidth*2,
+                windowHeight, windowWidth);
 
-            _actor = new Player(currentWorld, Console.WindowHeight, Console.WindowWidth, "white", '@');
+            _actor = new Player(currentWorld, windowHeight, windowWidth, "white", '@');
         }
 
         private void inputSwitch(ConsoleKeyInfo input)

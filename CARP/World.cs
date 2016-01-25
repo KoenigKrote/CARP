@@ -31,11 +31,11 @@ namespace CARP
 
         public void newWorld(int worldHeight, int worldWidth, int windowHeight, int windowWidth)
         {
-            this.windowHeight = windowHeight - 1;
-            this.windowWidth = windowWidth - 1;
+            this.windowHeight = windowHeight;
+            this.windowWidth = windowWidth;
             this.worldHeight = worldHeight;
             this.worldWidth = worldWidth;
-            worldArray = new TileInfo[worldWidth, worldHeight];
+            worldArray = new TileInfo[worldWidth+1, worldHeight+1]; //Need a buffer on the end of the array
             mapInfo = new MapInfo();
             getMapPosition(0, 0);
             addToWorld();
